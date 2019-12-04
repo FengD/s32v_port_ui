@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "logo_img_path": "./source/imgs/logo.png",
+    "navbar_brand": "HirainITD",
+    "navbar_sub_brand": "JING TANG 105",
+    "button_groups": [
+      {
+        "button_name": "Cloud_Display",
+        "dropdown_menu": [
+          {
+            "item_name": "Left_Cloud",
+            "check": "left_cloud_check",
+            "isChecked": "checked"
+          },
+          {
+            "item_name": "Right_Cloud",
+            "check": "right_cloud_check",
+            "isChecked": "checked"
+          },
+          {
+            "item_name": "Top_Cloud",
+            "check": "top_cloud_check",
+            "isChecked": "checked"
+          }
+        ]
+      },
+      {
+        "button_name": "Detection_Display",
+        "dropdown_menu": [
+          {
+            "item_name": "Freespace",
+            "check": "freespace_check"
+          },
+          {
+            "item_name": "Trailer",
+            "check": "trailer_check"
+          },
+          {
+            "item_name": "Bridge",
+            "check": "bridge_check"
+          },
+          {
+            "item_name": "Left_boundary",
+            "check": "left_boundary_check"
+          },
+          {
+            "item_name": "Right_boundary",
+            "check": "right_boundary_check"
+          },
+          {
+            "item_name": "Signboard",
+            "check": "signboard_check"
+          },
+          {
+            "item_name": "Container",
+            "check": "container_check"
+          },
+          {
+            "item_name": "Lidar_status",
+            "check": "lidar_status_check"
+          }
+        ]
+      }
+    ]
+  }
+}
