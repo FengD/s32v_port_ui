@@ -76,12 +76,12 @@ Object.assign( View.prototype, {
     }, 100);
   },
 
-  addFreespace: function(path, name, check) {
+  addFreespace: function(name) {
     var geometry = new THREE.Geometry();
     var material = new THREE.MeshBasicMaterial({
       color: 0x00ff00,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.4,
       side: THREE.DoubleSide
     });
 
@@ -98,32 +98,113 @@ Object.assign( View.prototype, {
     fs.name = name;
     fs.visible = false;
     this.scene.add(fs);
+  },
 
+  addSignboard: function(name) {
+    var geometry = new THREE.SphereGeometry(0.5, 30, 30);
+    var material = new THREE.MeshBasicMaterial({
+      color: '#ff0000',
+    });
+    var signboard = new THREE.Mesh(geometry, material);
+    signboard.name = name;
+    signboard.visible = false;
+    this.scene.add(signboard);
+  },
+
+  addBridge: function(name) {
+    var geometry = new THREE.Geometry();
+    var material = new THREE.MeshBasicMaterial({
+      color: 0x0000ff
+    });
+    geometry.vertices.push(new THREE.Vector3(0, -5, 0));
+    geometry.vertices.push(new THREE.Vector3(0, 5, 0));
+    var bridge = new THREE.Line(geometry, material);
+    bridge.name = name;
+    bridge.visible = false;
+    this.scene.add(bridge);
+  },
+
+  addBoundary: function(path, name, check) {
+    var geometry = new THREE.SphereGeometry(0.5, 30, 30);
+    var material = new THREE.MeshBasicMaterial({
+      color: '#ff0000'
+    });
+    var signboard = new THREE.Mesh(geometry, material);
+    signboard.name = name;
+    signboard.visible = false;
+    this.scene.add(signboard);
     var that = this;
     setInterval(function() {
-
-      function angPos(r, ang) {
-        let _ang = THREE.Math.degToRad(ang);
-        let x = r * Math.sin(_ang), y = r * Math.cos(_ang);
-        return [x, y];
-      }
-
       if ($("." + check).is(':checked')) {
         var loader = new YAMLLoader();
         loader.load( path, function ( data ) {
-          var fs = that.scene.getObjectByName( name );
-          for (var i = 0; i < data.fs.length; i++) {
-            var p = angPos(data.fs[i], i);
-            fs.geometry.vertices[i + 1].set(p[1], p[0], 0);
+          var signboard = that.scene.getObjectByName( name );
+          if (data.signboard.type == 0) {
+            signboard.visible = false;
+          } else {
+            signboard.position.x = data.signboard.x;
+            signboard.position.y = data.signboard.y;
+            signboard.visible = true;
           }
-          fs.geometry.verticesNeedUpdate = true;
         } );
       }
     }, 100);
   },
 
-  addSignboard: function() {
-    
+  updateDetection: function (path) {
+    function angPos(r, ang) {
+      let _ang = THREE.Math.degToRad(ang);
+      let x = r * Math.sin(_ang), y = r * Math.cos(_ang);
+      return [x, y];
+    }
+
+    function updateFreespace(scene, data) {
+      if ($(".freespace_check").is(':checked')) {
+        var fs = scene.getObjectByName( 'freespace' );
+        for (var i = 0; i < data.length; i++) {
+          var p = angPos(data[i], i);
+          fs.geometry.vertices[i + 1].set(p[1], p[0], 0);
+        }
+        fs.geometry.verticesNeedUpdate = true;
+      }
+    }
+
+    function updateSignboard(scene, data) {
+      if ($(".signboard_check").is(':checked')) {
+        var signboard = scene.getObjectByName( 'signboard' );
+        if (data.type == 0) {
+          signboard.visible = false;
+        } else {
+          signboard.position.x = data.x;
+          signboard.position.y = data.y;
+          signboard.visible = true;
+        }
+      }
+    }
+
+    function updateBridge(scene, data) {
+      if ($(".bridge_check").is(':checked')) {
+        var bridge = that.scene.getObjectByName( 'bridge' );
+        if (data.flag == 0) {
+          bridge.visible = false;
+        } else {
+          bridge.geometry.vertices[0].set(data.b, -5, 0);
+          bridge.geometry.vertices[1].set(data.b, 5, 0);
+          bridge.geometry.verticesNeedUpdate = true;
+          bridge.visible = true;
+        }
+      }
+    }
+
+    var that = this;
+    setInterval(function() {
+      var loader = new YAMLLoader();
+      loader.load( path, function ( data ) {
+        updateFreespace(that.scene, data.fs);
+        updateSignboard(that.scene, data.signboard);
+        updateBridge(that.scene, data.bridge);
+      } );
+    }, 100);
   }
 });
 

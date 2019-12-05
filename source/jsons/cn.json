@@ -79,10 +79,22 @@
     ],
 
     "detections": {
+      "path": "source/yamls/detection.yaml",
       "freespace" : {
         "name": "freespace",
-        "path": "source/yamls/detection.yaml",
         "check": "freespace_check"
+      },
+      "signboard" : {
+        "name": "signboard",
+        "check": "signboard_check"
+      },
+      "bridge" : {
+        "name": "bridge",
+        "check": "bridge_check"
+      },
+      "boundary" : {
+        "name": "boundary",
+        "check": "boundary_check"
       }
     }
   }

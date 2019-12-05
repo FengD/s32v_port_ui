@@ -11,6 +11,7 @@ import { View } from './view.js';
 			animate();
 			createClouds();
 			createDetection();
+			view.updateDetection(data.view.detections.path);
 
 		  function animate () {
 		    requestAnimationFrame( animate );
@@ -22,14 +23,25 @@ import { View } from './view.js';
 				$.each(data.view.clouds, function(index, cloud) {
 					view.addCloud(cloud.path, cloud.name, cloud.check);
 					checkAction(cloud.name, cloud.check);
-
 				});
 			}
 
 			function createDetection() {
 				var fs = data.view.detections.freespace;
-				view.addFreespace(fs.path, fs.name, fs.check);
+				view.addFreespace(fs.name);
 				checkAction(fs.name, fs.check);
+
+				var signboard = data.view.detections.signboard;
+				view.addSignboard(signboard.name);
+				checkAction(signboard.name, signboard.check);
+
+				var bridge = data.view.detections.bridge;
+				view.addBridge(bridge.name);
+				checkAction(bridge.name, bridge.check);
+
+				var boundary = data.view.detections.boundary;
+				view.addBoundary(boundary.name);
+				checkAction(boundary.name, boundary.check);
 			}
 
 			function checkAction(name, check) {
