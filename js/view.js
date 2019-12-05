@@ -76,6 +76,29 @@ Object.assign( View.prototype, {
     }, 100);
   },
 
+  addDetection: function(key, name) {
+    switch(key) {
+      case 'freespace':
+        this.addFreespace(name[0]);
+        break;
+      case 'signboard':
+        this.addSignboard(name[0]);
+        break;
+      case 'bridge':
+        this.addBridge(name[0]);
+        break;
+      case 'boundary':
+        this.addBoundary(name);
+        break;
+      case 'trailer':
+        this.addTrailer(name[0]);
+        break;
+      case 'container':
+        this.addContainer(name[0]);
+        break;
+    }
+  },
+
   addFreespace: function(name) {
     var geometry = new THREE.Geometry();
     var material = new THREE.MeshBasicMaterial({
@@ -84,7 +107,6 @@ Object.assign( View.prototype, {
       opacity: 0.4,
       side: THREE.DoubleSide
     });
-
     for (var i = 0; i <= 360; i++) {
       geometry.vertices.push(new THREE.Vector3(0, 0, 0));
     }
@@ -92,12 +114,12 @@ Object.assign( View.prototype, {
     for (var i = 0; i < 359; i++) {
       geometry.faces.push(new THREE.Face3(0, i + 1, i + 2));
     }
-    geometry.faces.push(new THREE.Face3(0, 360, 1));
 
-    var fs = new THREE.Mesh(geometry, material);
-    fs.name = name;
-    fs.visible = false;
-    this.scene.add(fs);
+    geometry.faces.push(new THREE.Face3(0, 360, 1));
+    var element = new THREE.Mesh(geometry, material);
+    element.name = name;
+    element.visible = false;
+    this.scene.add(element);
   },
 
   addSignboard: function(name) {
@@ -105,10 +127,10 @@ Object.assign( View.prototype, {
     var material = new THREE.MeshBasicMaterial({
       color: '#ff0000',
     });
-    var signboard = new THREE.Mesh(geometry, material);
-    signboard.name = name;
-    signboard.visible = false;
-    this.scene.add(signboard);
+    var element = new THREE.Mesh(geometry, material);
+    element.name = name;
+    element.visible = false;
+    this.scene.add(element);
   },
 
   addBridge: function(name) {
@@ -118,37 +140,73 @@ Object.assign( View.prototype, {
     });
     geometry.vertices.push(new THREE.Vector3(0, -5, 0));
     geometry.vertices.push(new THREE.Vector3(0, 5, 0));
-    var bridge = new THREE.Line(geometry, material);
-    bridge.name = name;
-    bridge.visible = false;
-    this.scene.add(bridge);
+    var element = new THREE.Line(geometry, material);
+    element.name = name;
+    element.visible = false;
+    this.scene.add(element);
   },
 
-  addBoundary: function(path, name, check) {
-    var geometry = new THREE.SphereGeometry(0.5, 30, 30);
+  addBoundary: function(names) {
+    for (var name of names) {
+      var geometry = new THREE.Geometry();
+      var material = new THREE.MeshBasicMaterial({
+        color: 0xff0000
+      });
+      geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+      geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+      var element = new THREE.Line(geometry, material);
+      element.name = name;
+      element.visible = false;
+      this.scene.add(element);
+    }
+  },
+
+  addTrailer: function(name) {
+    var geometry = new THREE.Geometry();
     var material = new THREE.MeshBasicMaterial({
-      color: '#ff0000'
+      color: 0xff0000,
+      transparent: true,
+      opacity: 1,
+      side: THREE.DoubleSide
     });
-    var signboard = new THREE.Mesh(geometry, material);
-    signboard.name = name;
-    signboard.visible = false;
-    this.scene.add(signboard);
-    var that = this;
-    setInterval(function() {
-      if ($("." + check).is(':checked')) {
-        var loader = new YAMLLoader();
-        loader.load( path, function ( data ) {
-          var signboard = that.scene.getObjectByName( name );
-          if (data.signboard.type == 0) {
-            signboard.visible = false;
-          } else {
-            signboard.position.x = data.signboard.x;
-            signboard.position.y = data.signboard.y;
-            signboard.visible = true;
-          }
-        } );
-      }
-    }, 100);
+    for (var i = 0; i <= 4; i++) {
+      geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    }
+
+    for (var i = 0; i < 3; i++) {
+      geometry.faces.push(new THREE.Face3(0, i + 1, i + 2));
+    }
+
+    geometry.faces.push(new THREE.Face3(0, 4, 1));
+    var element = new THREE.Mesh(geometry, material);
+    element.name = name;
+    element.visible = false;
+    this.scene.add(element);
+  },
+
+  addContainer: function(name) {
+    var geometry = new THREE.Geometry();
+    var material = new THREE.MeshBasicMaterial({
+      color: 0x0000ff,
+      transparent: true,
+      opacity: 1,
+      side: THREE.DoubleSide
+    });
+    geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    geometry.vertices.push(new THREE.Vector3(0, -1.45, 0));
+    geometry.vertices.push(new THREE.Vector3(0, -1.45, 2));
+    geometry.vertices.push(new THREE.Vector3(0, 1.45, 2));
+    geometry.vertices.push(new THREE.Vector3(0, 1.45, 0));
+
+    for (var i = 0; i < 3; i++) {
+      geometry.faces.push(new THREE.Face3(0, i + 1, i + 2));
+    }
+
+    geometry.faces.push(new THREE.Face3(0, 4, 1));
+    var element = new THREE.Mesh(geometry, material);
+    element.name = name;
+    element.visible = false;
+    this.scene.add(element);
   },
 
   updateDetection: function (path) {
@@ -196,6 +254,61 @@ Object.assign( View.prototype, {
       }
     }
 
+    function updateBoundary(scene, data, name) {
+      if ($(".boundary_check").is(':checked')) {
+        var boundary = that.scene.getObjectByName( name );
+        if (data.flag == 0) {
+          boundary.visible = false;
+        } else {
+          var x1 = 10, x2 = -10;
+          var y1 = data.k * x1 + data.b;
+          var y2 = data.k * x2 + data.b;
+          boundary.geometry.vertices[0].set(x1, y1, 0);
+          boundary.geometry.vertices[1].set(x2, y2, 0);
+          boundary.geometry.verticesNeedUpdate = true;
+          boundary.visible = true;
+        }
+      }
+    }
+
+    function updateTrailer(scene, data) {
+      if ($(".trailer_check").is(':checked')) {
+        var trailer = scene.getObjectByName( 'trailer' );
+        if (data.flag == 0) {
+          trailer.visible = false;
+        } else {
+          var x1 = 1.45, x2 = -1.45;
+          var y1 = data.k * x1 + 2;
+          var y2 = data.k * x2 + 2;
+          var y3 = data.k * x1 - 2;
+          var y4 = data.k * x2 - 2;
+          trailer.geometry.vertices[1].set(y1, x1, 0.2);
+          trailer.geometry.vertices[2].set(y2, x2, 0.2);
+          trailer.geometry.vertices[3].set(y4, x2, 0.2);
+          trailer.geometry.vertices[4].set(y3, x1, 0.2);
+          trailer.geometry.verticesNeedUpdate = true;
+          trailer.visible = true;
+        }
+      }
+    }
+
+    function updateContainer(scene, data) {
+      if ($(".container_check").is(':checked')) {
+        var container = scene.getObjectByName( 'container' );
+        if (data.flag == 0) {
+          container.visible = false;
+        } else {
+          container.geometry.vertices[0].x = data.dis1;
+          container.geometry.vertices[1].x = data.dis1;
+          container.geometry.vertices[2].x = data.dis1;
+          container.geometry.vertices[3].x = data.dis1;
+          container.geometry.vertices[4].x = data.dis1;
+          container.geometry.verticesNeedUpdate = true;
+          container.visible = true;
+        }
+      }
+    }
+
     var that = this;
     setInterval(function() {
       var loader = new YAMLLoader();
@@ -203,6 +316,10 @@ Object.assign( View.prototype, {
         updateFreespace(that.scene, data.fs);
         updateSignboard(that.scene, data.signboard);
         updateBridge(that.scene, data.bridge);
+        updateBoundary(that.scene, data.left_boundary, "left_boundary");
+        updateBoundary(that.scene, data.right_boundary, "right_boundary");
+        updateTrailer(that.scene, data.trailer);
+        updateContainer(that.scene, data.container);
       } );
     }, 100);
   }

@@ -4,13 +4,12 @@ import { View } from './view.js';
 	var	$window = $(window);
 	$window.on('load', function() {
 		$.getJSON("source/jsons/cn.json",function(data) {
-			$('#homepage').createNav(data.nav);
-			$('#homepage').createView();
-
+			$('#homepage').createNavHtml(data.nav);
+			$('#homepage').createViewHtml();
 			var view = new View();
 			animate();
 			createClouds();
-			createDetection();
+			createDetections();
 			view.updateDetection(data.view.detections.path);
 
 		  function animate () {
@@ -22,34 +21,27 @@ import { View } from './view.js';
 			function createClouds() {
 				$.each(data.view.clouds, function(index, cloud) {
 					view.addCloud(cloud.path, cloud.name, cloud.check);
-					checkAction(cloud.name, cloud.check);
+					checkAction([cloud.name], cloud.check);
 				});
 			}
 
-			function createDetection() {
-				var fs = data.view.detections.freespace;
-				view.addFreespace(fs.name);
-				checkAction(fs.name, fs.check);
-
-				var signboard = data.view.detections.signboard;
-				view.addSignboard(signboard.name);
-				checkAction(signboard.name, signboard.check);
-
-				var bridge = data.view.detections.bridge;
-				view.addBridge(bridge.name);
-				checkAction(bridge.name, bridge.check);
-
-				var boundary = data.view.detections.boundary;
-				view.addBoundary(boundary.name);
-				checkAction(boundary.name, boundary.check);
+			function createDetections() {
+				for (var element of data.view.detections.elements) {
+					view.addDetection(element.key, element.name);
+					checkAction(element.name, element.check);
+				}
 			}
 
-			function checkAction(name, check) {
+			function checkAction(names, check) {
 				$("." + check).change(function() {
 					if($(this).is(':checked')) {
-						view.getScene().getObjectByName( name ).visible = true;
+						for (var name of names) {
+							view.getScene().getObjectByName( name ).visible = true;
+						}
 					} else {
-						view.getScene().getObjectByName( name ).visible = false;
+						for (var name of names) {
+							view.getScene().getObjectByName( name ).visible = false;
+						}
 					}
 				});
 			}
@@ -67,14 +59,9 @@ import { View } from './view.js';
 					points.material.needsUpdate = true;
 				}
 
-				function changeCloudSize(points, isLarger) {
-					if (isLarger) {
-						points.material.size *= 1.2;
-	          points.material.needsUpdate = true;
-					} else {
-						points.material.size /= 1.2;
-	          points.material.needsUpdate = true;
-					}
+				function changeCloudSize(points, scale) {
+					points.material.size *= scale;
+					points.material.needsUpdate = true;
 					if (points.material.size > 5) {
 						points.material.size = 5;
 					}
@@ -83,29 +70,34 @@ import { View } from './view.js';
 					}
 				}
 
+				function changeCloudsColor (color) {
+					changeCloudColor(left_points, color);
+					changeCloudColor(right_points, color);
+					changeCloudColor(top_points, color);
+				}
+
+				function changeCloudsSize (scale) {
+					changeCloudSize(left_points, scale);
+					changeCloudSize(right_points, scale);
+					changeCloudSize(top_points, scale);
+				}
+
 	      var left_points = view.getScene().getObjectByName( 'left_cloud' );
 				var right_points = view.getScene().getObjectByName( 'right_cloud' );
 				var top_points = view.getScene().getObjectByName( 'top_cloud' );
+
 	      switch ( ev.key || String.fromCharCode( ev.keyCode || ev.charCode ) ) {
 	        case '+':
-	          changeCloudSize(left_points, true);
-						changeCloudSize(right_points, true);
-						changeCloudSize(top_points, true);
+	          changeCloudsSize(1.2);
 	          break;
 	        case '-':
-						changeCloudSize(left_points, false);
-						changeCloudSize(right_points, false);
-						changeCloudSize(top_points, false);
+						changeCloudsSize(0.8);
 	          break;
 	        case 'c':
-						changeCloudColor(left_points, Math.random() * 0xffffff);
-						changeCloudColor(right_points, Math.random() * 0xffffff);
-						changeCloudColor(top_points, Math.random() * 0xffffff);
+						changeCloudsColor(Math.random() * 0xffffff);
 	          break;
 					case 'C':
-						changeCloudColor(left_points, 0xffffff);
-						changeCloudColor(right_points, 0xffffff);
-						changeCloudColor(top_points, 0xffffff);
+						changeCloudsColor(0xffffff);
 						break;
 	      }
 	    });

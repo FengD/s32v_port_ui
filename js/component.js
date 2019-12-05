@@ -13,7 +13,7 @@
     this.tiggerObj.append($nav);
     $nav.append($navContainer);
     $navContainer.append(this.createNavHeader());
-    $navContainer.append(this.createNav());
+    $navContainer.append(this.createNavHtml());
   };
 
   Nav.prototype.createNavHeader = function () {
@@ -30,7 +30,7 @@
     return navbarHeaderHtml;
   };
 
-  Nav.prototype.createNav = function (obj) {
+  Nav.prototype.createNavHtml = function (obj) {
     var $navDiv = $('<div id=\"navbar\" class=\"collapse navbar-collapse\"></nav>');
     var $navUl = $('<ul class="nav navbar-nav"></nav>');
     $navUl.append("<li class=\"active\"><a href=\"#\">" + this.param.navbar_sub_brand + "</a></li>");
@@ -65,12 +65,12 @@
     return $navDiv;
   }
 
-  $.fn.createNav = function (options) {
+  $.fn.createNavHtml = function (options) {
     var nav = new Nav(this, options);
     return nav;
   };
 
-  $.fn.createView = function () {
+  $.fn.createViewHtml = function () {
     var viewHtml = "<div class=\"container-fluid\">";
     viewHtml += "<div class=\"row\">";
     viewHtml += "<div class=\"col-12 center\">";

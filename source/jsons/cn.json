@@ -50,10 +50,6 @@
           {
             "item_name": "Container",
             "check": "container_check"
-          },
-          {
-            "item_name": "Lidar status",
-            "check": "lidar_status_check"
           }
         ]
       }
@@ -80,22 +76,38 @@
 
     "detections": {
       "path": "source/yamls/detection.yaml",
-      "freespace" : {
-        "name": "freespace",
-        "check": "freespace_check"
-      },
-      "signboard" : {
-        "name": "signboard",
-        "check": "signboard_check"
-      },
-      "bridge" : {
-        "name": "bridge",
-        "check": "bridge_check"
-      },
-      "boundary" : {
-        "name": "boundary",
-        "check": "boundary_check"
-      }
+      "elements" : [
+        {
+          "key": "freespace",
+          "name": ["freespace"],
+          "check": "freespace_check"
+        },
+        {
+          "key": "signboard",
+          "name": ["signboard"],
+          "check": "signboard_check"
+        },
+        {
+          "key": "bridge",
+          "name": ["bridge"],
+          "check": "bridge_check"
+        },
+        {
+          "key": "boundary",
+          "name": ["left_boundary", "right_boundary"],
+          "check": "boundary_check"
+        },
+        {
+          "key": "trailer",
+          "name": ["trailer"],
+          "check": "trailer_check"
+        },
+        {
+          "key": "container",
+          "name": ["container"],
+          "check": "container_check"
+        }
+      ]
     }
   }
 }
