@@ -1,6 +1,7 @@
 import * as THREE from './threejs/three.module.js';
 import { OrbitControls } from './threejs/jsm/controls/OrbitControls.js';
 import { PCDLoader } from './threejs/jsm/loaders/PCDLoader.js';
+import { YAMLLoader } from './YAMLLoader.js';
 
 var View = function () {
   this.camera = undefined;
@@ -8,14 +9,6 @@ var View = function () {
   this.scene = undefined;
   this.renderer = undefined;
   this.init();
-  // animate();
-  // var that = this;
-  // function animate () {
-  //   requestAnimationFrame( animate );
-  //   console.log(that.controls);
-  //   that.controls.update();
-  //   that.renderer.render( that.scene, that.camera );
-  // }
 };
 
 Object.assign( View.prototype, {
@@ -36,18 +29,9 @@ Object.assign( View.prototype, {
     this.renderer.setSize( window.innerWidth, window.innerHeight - 45);
     document.body.appendChild( this.renderer.domElement );
 
-    var geometry = new THREE.BufferGeometry();
-    var material = new THREE.PointsMaterial( { size: 0.01 } );
-
-    var mesh = new THREE.Points( geometry, material );
-    var name = "Right_Cloud";
-    mesh.name = name;
-
-    this.scene.add(mesh);
     var container = $("#view").append(this.renderer.domElement);
 
     this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-
     this.controls.rotateSpeed = 1.0;
     this.controls.zoomSpeed = 3.0;
     this.controls.panSpeed = 1.0;
@@ -73,17 +57,74 @@ Object.assign( View.prototype, {
     return this.renderer;
   },
 
-  addCloud: function(filePath, name) {
+  addCloud: function(path, name, check) {
+    var geometry = new THREE.BufferGeometry();
+    var material = new THREE.PointsMaterial( { size: 1 } );
+    var mesh = new THREE.Points( geometry, material );
+    mesh.name = name;
+    this.scene.add(mesh);
+
     var that = this;
     setInterval(function() {
-      var loader = new PCDLoader();
-      loader.load( filePath, function ( cloud ) {
-        var points = that.scene.getObjectByName( name );
-        points.geometry = cloud.geometry;
-      } );
+      if ($("." + check).is(':checked')) {
+        var loader = new PCDLoader();
+        loader.load( path, function ( cloud ) {
+          var points = that.scene.getObjectByName( name );
+          points.geometry = cloud.geometry;
+        } );
+      }
     }, 100);
-  }
+  },
 
+  addFreespace: function(path, name, check) {
+    var geometry = new THREE.Geometry();
+    var material = new THREE.MeshBasicMaterial({
+      color: 0x00ff00,
+      transparent: true,
+      opacity: 0.5,
+      side: THREE.DoubleSide
+    });
+
+    for (var i = 0; i <= 360; i++) {
+      geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    }
+
+    for (var i = 0; i < 359; i++) {
+      geometry.faces.push(new THREE.Face3(0, i + 1, i + 2));
+    }
+    geometry.faces.push(new THREE.Face3(0, 360, 1));
+
+    var fs = new THREE.Mesh(geometry, material);
+    fs.name = name;
+    fs.visible = false;
+    this.scene.add(fs);
+
+    var that = this;
+    setInterval(function() {
+
+      function angPos(r, ang) {
+        let _ang = THREE.Math.degToRad(ang);
+        let x = r * Math.sin(_ang), y = r * Math.cos(_ang);
+        return [x, y];
+      }
+
+      if ($("." + check).is(':checked')) {
+        var loader = new YAMLLoader();
+        loader.load( path, function ( data ) {
+          var fs = that.scene.getObjectByName( name );
+          for (var i = 0; i < data.fs.length; i++) {
+            var p = angPos(data.fs[i], i);
+            fs.geometry.vertices[i + 1].set(p[1], p[0], 0);
+          }
+          fs.geometry.verticesNeedUpdate = true;
+        } );
+      }
+    }, 100);
+  },
+
+  addSignboard: function() {
+    
+  }
 });
 
 export { View };

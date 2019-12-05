@@ -5,27 +5,27 @@
     "navbar_sub_brand": "JING TANG 105",
     "button_groups": [
       {
-        "button_name": "Cloud_Display",
+        "button_name": "Cloud Display",
         "dropdown_menu": [
           {
-            "item_name": "Left_Cloud",
+            "item_name": "Left Cloud",
             "check": "left_cloud_check",
-            "isChecked": "checked"
+            "init_check": "checked"
           },
           {
-            "item_name": "Right_Cloud",
+            "item_name": "Right Cloud",
             "check": "right_cloud_check",
-            "isChecked": "checked"
+            "init_check": "checked"
           },
           {
-            "item_name": "Top_Cloud",
+            "item_name": "Top Cloud",
             "check": "top_cloud_check",
-            "isChecked": "checked"
+            "init_check": "checked"
           }
         ]
       },
       {
-        "button_name": "Detection_Display",
+        "button_name": "Detection Display",
         "dropdown_menu": [
           {
             "item_name": "Freespace",
@@ -40,12 +40,8 @@
             "check": "bridge_check"
           },
           {
-            "item_name": "Left_boundary",
-            "check": "left_boundary_check"
-          },
-          {
-            "item_name": "Right_boundary",
-            "check": "right_boundary_check"
+            "item_name": "Boundary",
+            "check": "boundary_check"
           },
           {
             "item_name": "Signboard",
@@ -56,11 +52,38 @@
             "check": "container_check"
           },
           {
-            "item_name": "Lidar_status",
+            "item_name": "Lidar status",
             "check": "lidar_status_check"
           }
         ]
       }
     ]
+  },
+  "view": {
+    "clouds": [
+      {
+        "name": "left_cloud",
+        "path": "source/pcds/left.pcd",
+        "check": "left_cloud_check"
+      },
+      {
+        "name": "right_cloud",
+        "path": "source/pcds/right.pcd",
+        "check": "right_cloud_check"
+      },
+      {
+        "name": "top_cloud",
+        "path": "source/pcds/top.pcd",
+        "check": "top_cloud_check"
+      }
+    ],
+
+    "detections": {
+      "freespace" : {
+        "name": "freespace",
+        "path": "source/yamls/detection.yaml",
+        "check": "freespace_check"
+      }
+    }
   }
 }

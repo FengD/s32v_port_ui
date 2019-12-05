@@ -47,8 +47,8 @@
         itemHtml += "<div class=\"row display-drop-item\">";
         itemHtml += "<div>";
         itemHtml += "<label class=\"form-inline\"><input class=\"mui-switch mui-switch-animbg " + item.check + "\" type=\"checkbox\" ";
-        if (item.isChecked) {
-          itemHtml += item.isChecked;
+        if (item.init_check) {
+          itemHtml += item.init_check;
         }
         itemHtml += ">" + item.item_name + "</label>";
         itemHtml += "</div>";
