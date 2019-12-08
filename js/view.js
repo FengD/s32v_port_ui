@@ -277,15 +277,18 @@ Object.assign( View.prototype, {
         if (data.flag == 0) {
           trailer.visible = false;
         } else {
-          var x1 = 1.45, x2 = -1.45;
-          var y1 = data.k * x1 + 2;
-          var y2 = data.k * x2 + 2;
-          var y3 = data.k * x1 - 2;
-          var y4 = data.k * x2 - 2;
+          var y1 = -2.8, y2 = -12.0;
+          var k = Math.tan(data.k * Math.PI / 180.0);
+          var b = 1.45 * Math.sqrt( 1 + k * k );
+          var x1 = k * y1 + b;
+          var x2 = k * y1 - b;
+          var x3 = k * y2 - b;
+          var x4 = k * y2 + b;
+          trailer.geometry.vertices[0].set(y1, 0, 0.2);
           trailer.geometry.vertices[1].set(y1, x1, 0.2);
-          trailer.geometry.vertices[2].set(y2, x2, 0.2);
-          trailer.geometry.vertices[3].set(y4, x2, 0.2);
-          trailer.geometry.vertices[4].set(y3, x1, 0.2);
+          trailer.geometry.vertices[2].set(y1, x2, 0.2);
+          trailer.geometry.vertices[3].set(y2, x3, 0.2);
+          trailer.geometry.vertices[4].set(y2, x4, 0.2);
           trailer.geometry.verticesNeedUpdate = true;
           trailer.visible = true;
         }
