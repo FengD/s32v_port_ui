@@ -324,7 +324,7 @@ Object.assign( View.prototype, {
         updateTrailer(that.scene, data.trailer);
         updateContainer(that.scene, data.container);
       } );
-    }, 100);
+    }, 50);
   }
 });
 

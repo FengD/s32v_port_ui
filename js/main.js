@@ -55,18 +55,22 @@ import { View } from './view.js';
 	    window.addEventListener( 'keypress', function(ev) {
 
 				function changeCloudColor(points, color) {
-					points.material.color.setHex( color );
-					points.material.needsUpdate = true;
+					if ($("." + points.name + "_check").is(':checked')) {
+						points.material.color.setHex( color );
+						points.material.needsUpdate = true;
+		      }
 				}
 
 				function changeCloudSize(points, scale) {
-					points.material.size *= scale;
-					points.material.needsUpdate = true;
-					if (points.material.size > 5) {
-						points.material.size = 5;
-					}
-					if (points.material.size < 0.2) {
-						points.material.size = 0.2;
+					if ($("." + points.name + "_check").is(':checked')) {
+						points.material.size *= scale;
+						points.material.needsUpdate = true;
+						if (points.material.size > 5) {
+							points.material.size = 5;
+						}
+						if (points.material.size < 0.2) {
+							points.material.size = 0.2;
+						}
 					}
 				}
 
