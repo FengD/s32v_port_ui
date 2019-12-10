@@ -3,7 +3,7 @@ import { View } from './view.js';
 (function($) {
 	var	$window = $(window);
 	$window.on('load', function() {
-		$.getJSON("source/jsons/cn.json",function(data) {
+		$.getJSON("source/jsons/config.json",function(data) {
 			$('#homepage').createNavHtml(data.nav);
 			$('#homepage').createViewHtml();
 			var view = new View();
