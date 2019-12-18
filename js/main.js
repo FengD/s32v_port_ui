@@ -75,20 +75,19 @@ import { View } from './view.js';
 				}
 
 				function changeCloudsColor (color) {
-					changeCloudColor(left_points, color);
-					changeCloudColor(right_points, color);
-					changeCloudColor(top_points, color);
+					$.each(data.view.clouds, function(index, cloud) {
+						var points = view.getScene().getObjectByName( cloud.name );
+						changeCloudColor(points, color);
+					});
 				}
 
 				function changeCloudsSize (scale) {
-					changeCloudSize(left_points, scale);
-					changeCloudSize(right_points, scale);
-					changeCloudSize(top_points, scale);
+					$.each(data.view.clouds, function(index, cloud) {
+						var points = view.getScene().getObjectByName( cloud.name );
+						changeCloudSize(points, scale);
+					});
 				}
 
-	      var left_points = view.getScene().getObjectByName( 'left_cloud' );
-				var right_points = view.getScene().getObjectByName( 'right_cloud' );
-				var top_points = view.getScene().getObjectByName( 'top_cloud' );
 
 	      switch ( ev.key || String.fromCharCode( ev.keyCode || ev.charCode ) ) {
 	        case '+':
